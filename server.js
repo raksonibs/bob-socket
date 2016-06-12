@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const SocketServer = require('ws').Server;
+const socketIO = require('socket.io');
 const path = require('path');
 
 const PORT = process.env.PORT || 3000;
@@ -11,15 +11,11 @@ const server = express()
   .use((req, res) => res.sendFile(INDEX) )
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-const wss = new SocketServer({ server });
+const io = socketIO(server);
 
-wss.on('connection', (ws) => {
+io.on('connection', (socket) => {
   console.log('Client connected');
-  ws.on('close', () => console.log('Client disconnected'));
+  socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-setInterval(() => {
-  wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
-  });
-}, 1000);
+setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
