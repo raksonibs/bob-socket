@@ -3,6 +3,7 @@
 const express = require('express');
 const socketIO = require('socket.io');
 const path = require('path');
+var request = require('request');
 
 const PORT = process.env.PORT || 3001;
 const INDEX = path.join(__dirname, 'index.html');
@@ -21,7 +22,17 @@ io.on('connection', (socket) => {
   });
 });
 
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
+setInterval(() => {
+  request('http://localhost:3000/api/articles', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      // console.log(body) // Show the HTML for the Google homepage.
+      io.emit('time', JSON.parse(body));
+    } else {
+      io.emit('error', new Date().toTimeString());
+    }
+  })
+}, 10000);
+
 
 // var WebSocketServer = require('ws').Server;  
 // var ws = new WebSocketServer({port: 3001});

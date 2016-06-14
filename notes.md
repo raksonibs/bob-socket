@@ -1,0 +1,1 @@
+- will query api each 1000 second, and send the result of new articles to the ember app
