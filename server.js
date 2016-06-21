@@ -23,24 +23,18 @@ io.on('connection', (socket) => {
 });
 
 setInterval(() => {
-  request('http://localhost:3000/api/articles', function (error, response, body) {
+  request('http://localhost:3000/articles?newArticles=true', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       // console.log(body) // Show the HTML for the Google homepage.
-      io.emit('time', JSON.parse(body));
+      json = JSON.parse(body)
+      if (json.data.length > 0) {        
+        io.emit('message', "yo, sending articles!")
+        io.emit('new_articles',  JSON.parse(body));
+      } else {
+        io.emit('message', "there are no new articles:(!")
+      }
     } else {
       io.emit('error', new Date().toTimeString());
     }
   })
-}, 10000);
-
-
-// var WebSocketServer = require('ws').Server;  
-// var ws = new WebSocketServer({port: 3001});
-
-// // ws.on('connection', function connection(ws) {  
-// //   ws.on('message', function incoming(message) {
-// //     console.log('received: %s', message);
-// //   });
-
-// //   ws.send('Hey! Welcome to my websocket challenge!');
-// // });
+}, 5001);
