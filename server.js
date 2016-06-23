@@ -39,4 +39,4 @@ setInterval(() => {
       io.emit('error', new Date().toTimeString());
     }
   })
-}, 5001);
+}, 10001);
