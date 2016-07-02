@@ -26,8 +26,8 @@ io.on('connection', (socket) => {
 
   socket.on('searchForGame', function(data) {
     console.log(data)
-    console.log("searching on server for game type " + data.data.game_type_id)
-    request('http://localhost:3000/matches/search/' + data.data.game_type_id, function(error, response, body) {
+    console.log("searching on server for game type " + data.data.game_type_id + " with game id " + data.data.game_id)
+    request('http://localhost:3000/matches/search/' + data.data.game_type_id + "?game_id=" + data.data.game_id, function(error, response, body) {
       // search for match, if cannot find match keep searching, if can find match send data back to transitionTo the new match in the component!
       // need to find those guys like match 3 when match 4 finds to emit to transition back or something
       // set up listener on client that looks for these match ids then?
@@ -39,11 +39,11 @@ io.on('connection', (socket) => {
         // need to set up listener I think?
         // do I have to set up a dummy match to fill?
       }
-      else if (json.data.length > 0) {
+      else if (json.data !== null) {
         console.log('we found a match and now need to transition to it!')
         console.log(json)
         io.emit('message', 'found a match!');
-        io.emit('match', json)
+        io.emit('found', json)
       } 
     })
   })
