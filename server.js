@@ -22,21 +22,21 @@ io.on('connection', (socket) => {
   });
 });
 
-setInterval(() => {
-  console.log("Getting Articles")
-  request('http://localhost:3000/articles?newArticles=true', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      // console.log(body) // Show the HTML for the Google homepage.
-      var json = JSON.parse(body)
+// setInterval(() => {
+//   console.log("Getting Articles")
+//   request('http://localhost:3000/articles?newArticles=true', function (error, response, body) {
+//     if (!error && response.statusCode == 200) {
+//       // console.log(body) // Show the HTML for the Google homepage.
+//       var json = JSON.parse(body)
       
-      if (json.data.length > 0) {        
-        io.emit('message', "yo, sending articles!")
-        io.emit('new_articles',  JSON.parse(body));
-      } else {
-        io.emit('message', "there are no new articles:(!")
-      }
-    } else {
-      io.emit('error', new Date().toTimeString());
-    }
-  })
-}, 10001);
+//       if (json.data.length > 0) {        
+//         io.emit('message', "yo, sending articles!")
+//         io.emit('new_articles',  JSON.parse(body));
+//       } else {
+//         io.emit('message', "there are no new articles:(!")
+//       }
+//     } else {
+//       io.emit('error', new Date().toTimeString());
+//     }
+//   })
+// }, 10001);
