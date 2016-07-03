@@ -24,6 +24,14 @@ io.on('connection', (socket) => {
     console.log('received: %s', message);
   });
 
+  socket.on('turnChange', function(data) {
+    // only want to update based on match id
+    console.log('need to update change')
+    console.log(data)
+    // might want to grab match?
+    io.emit('updateCurrentTurn', data)
+  })
+
   socket.on('searchForGame', function(data) {
     console.log(data)
     console.log("searching on server for game type " + data.data.game_type_id + " with game id " + data.data.game_id)
