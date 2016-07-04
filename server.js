@@ -29,7 +29,14 @@ io.on('connection', (socket) => {
     console.log('need to update change')
     console.log(data)
     // might want to grab match?
-    io.emit('updateCurrentTurn', data)
+    request.patch({url: 'http://localhost:3000/matches/' + data.data.match_id, data: data}, function(error, response, body) {
+      // search for match, if cannot find match keep searching, if can find match send data back to transitionTo the new match in the component!
+      // need to find those guys like match 3 when match 4 finds to emit to transition back or something
+      // set up listener on client that looks for these match ids then?
+      console.log(body)
+      var json = JSON.parse(body);
+      io.emit('updateCurrentTurn', json)
+    })
   })
 
   socket.on('searchForGame', function(data) {
