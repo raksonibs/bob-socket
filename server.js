@@ -39,6 +39,12 @@ io.on('connection', (socket) => {
     })
   })
 
+  socket.on('winnerMatch', function(data) {
+    console.log(data);
+    console.log("recording winner for match id" + data.data.match.id + " and winner is " + data.data.user_id);
+    
+  })
+
   socket.on('searchForGame', function(data) {
     console.log(data)
     console.log("searching on server for game type " + data.data.game_type_id + " with game id " + data.data.game_id)
