@@ -41,8 +41,24 @@ io.on('connection', (socket) => {
 
   socket.on('winnerMatch', function(data) {
     console.log(data);
-    console.log("recording winner for match id" + data.data.match.id + " and winner is " + data.data.user_id);
-    
+    console.log("recording winner for match id" + data.data.match.uniqueId + " and winner is " + data.data.user_id);
+    request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId + "/winner/?user_id=" + data.data.user_id, data: data}, function(error, response, body) {
+      console.log(body)
+      var json = JSON.parse(body);
+      // emit that winner and outcome created
+      // person can select new match and new game!
+      // also make sure ruby amount changes, etc
+      if (json["status"] === 428) {        
+        console.log("no match data");
+        // need to set up listener I think?
+        // do I have to set up a dummy match to fill?
+      }
+      else if (json.data !== null) {
+        console.log('api created the outcomes');
+        io.emit('message', 'outcomes created!');
+        io.emit('winnersCreated', json)
+      }
+    })
   })
 
   socket.on('searchForGame', function(data) {
