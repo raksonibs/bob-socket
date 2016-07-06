@@ -68,8 +68,13 @@ io.on('connection', (socket) => {
       // search for match, if cannot find match keep searching, if can find match send data back to transitionTo the new match in the component!
       // need to find those guys like match 3 when match 4 finds to emit to transition back or something
       // set up listener on client that looks for these match ids then?
-      console.log(body)
-      var json = JSON.parse(body);
+      console.log("search outputs: " + body);
+      var json;
+      try {
+        json = JSON.parse(body);
+      } catch (e)  {
+        json = body;
+      }
       
       if (json["status"] === 428) {        
         console.log("no match data");
