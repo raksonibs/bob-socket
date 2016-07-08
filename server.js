@@ -52,9 +52,7 @@ io.on('connection', (socket) => {
     console.log(data)
     // might want to grab match?
     request.patch({url: 'http://localhost:3000/matches/' + data.data.match.uniqueId, data: data}, function(error, response, body) {
-      // search for match, if cannot find match keep searching, if can find match send data back to transitionTo the new match in the component!
-      // need to find those guys like match 3 when match 4 finds to emit to transition back or something
-      // set up listener on client that looks for these match ids then?
+      console.log("HERE IS THE TURN CHANGE JSON");
       console.log(body)
       json = jsonParse(body);
       io.emit('updateCurrentTurn', json)
@@ -68,7 +66,7 @@ io.on('connection', (socket) => {
 
     request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId +"/record_move?choice=" + data.data.choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
       console.log(body)
-      json = jsonParse(data);
+      json = jsonParse(body);
 
       if (json["status"] === 428) {        
         console.log("no mover data");
@@ -89,7 +87,7 @@ io.on('connection', (socket) => {
     console.log("recording winner for match id" + data.data.match.uniqueId + " and winner is " + data.data.user_id);
     request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId + "/winner/?user_id=" + data.data.user_id, data: data}, function(error, response, body) {
       console.log(body)
-      json = jsonParse(data);
+      json = jsonParse(body);
       // emit that winner and outcome created
       // person can select new match and new game!
       // also make sure ruby amount changes, etc
