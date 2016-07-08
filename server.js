@@ -5,8 +5,21 @@ const socketIO = require('socket.io');
 const path = require('path');
 var request = require('request');
 const debug = require('debug');
+var json;
 
 debug('booting %s', 'test');
+
+function jsonParse(body) {
+  var json;
+
+  try {
+    json = JSON.parse(body);
+  } catch (e)  {
+    json = body;
+  }
+
+  return json;
+}
 
 const PORT = process.env.PORT || 3001;
 const INDEX = path.join(__dirname, 'index.html');
@@ -24,6 +37,15 @@ io.on('connection', (socket) => {
     console.log('received: %s', message);
   });
 
+  socket.on('resetMover', function(data) {
+    console.log("RESETING MOVER DATA IN RAILS APP");
+    request.patch({url: "http://localhost:3000/movers/" + data.data.mover_id + "/reset"}, function(error, response, body) {
+      console.log(body)
+      json = jsonParse(body);
+      // io.emit('updateCurrentTurn', json)
+    })
+  })
+
   socket.on('turnChange', function(data) {
     // only want to update based on match id
     console.log('need to update change')
@@ -34,12 +56,7 @@ io.on('connection', (socket) => {
       // need to find those guys like match 3 when match 4 finds to emit to transition back or something
       // set up listener on client that looks for these match ids then?
       console.log(body)
-      var json;
-      try {
-        json = JSON.parse(body);
-      } catch (e)  {
-        json = body;
-      }
+      json = jsonParse(body);
       io.emit('updateCurrentTurn', json)
     })
   })
@@ -47,20 +64,11 @@ io.on('connection', (socket) => {
   socket.on('recordMove', function(data) {
     console.log('MOVE RECORDED!');
     console.log(data);
-    var json;
-      try {
-        json = JSON.parse(data);
-      } catch (e)  {
-        json = data;
-      }
+    json = jsonParse(data);
 
     request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId +"/record_move?choice=" + data.data.choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
       console.log(body)
-      try {
-        json = JSON.parse(body);
-      } catch (e)  {
-        json = body;
-      }
+      json = jsonParse(data);
 
       if (json["status"] === 428) {        
         console.log("no mover data");
@@ -81,11 +89,7 @@ io.on('connection', (socket) => {
     console.log("recording winner for match id" + data.data.match.uniqueId + " and winner is " + data.data.user_id);
     request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId + "/winner/?user_id=" + data.data.user_id, data: data}, function(error, response, body) {
       console.log(body)
-      try {        
-        var json = JSON.parse(body);
-      } catch (e) {
-        var json = body;
-      }
+      json = jsonParse(data);
       // emit that winner and outcome created
       // person can select new match and new game!
       // also make sure ruby amount changes, etc
@@ -110,12 +114,7 @@ io.on('connection', (socket) => {
       // need to find those guys like match 3 when match 4 finds to emit to transition back or something
       // set up listener on client that looks for these match ids then?
       console.log("search outputs: " + body);
-      var json;
-      try {
-        json = JSON.parse(body);
-      } catch (e)  {
-        json = body;
-      }
+      json = jsonParse(body);
       
       if (json["status"] === 428) {        
         console.log("no match data");
