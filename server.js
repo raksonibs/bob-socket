@@ -87,6 +87,7 @@ io.on('connection', (socket) => {
         console.log("MOVE RECORDED< HERE IS THE RESPONSE FROM POST RECORD");
         console.log(json);
         io.emit('moveRecorded', json);
+        io.emit('updateGameView', json);
       }
 
     })
