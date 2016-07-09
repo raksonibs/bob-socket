@@ -61,10 +61,20 @@ io.on('connection', (socket) => {
 
   socket.on('recordMove', function(data) {
     console.log('MOVE RECORDED!');
-    console.log(data);
+    // console.log(data);
     json = jsonParse(data);
+    console.log("PARSED CHOICE< DIFFERENT FOR TTT AND STIXX");
+    console.log(json);
+    // problem here is the post request doesn't actually pass the data, and can't pass data as option or something...
+    var choice;
 
-    request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId +"/record_move?choice=" + data.data.choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
+    if (typeof json.data.choice === 'object') {
+      console.log("CLEANING CHOICE");
+      choice = [json.data.choice.row, json.data.choice.col];
+    } else {
+      choice = choice;
+    }
+    request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId +"/record_move?choice=" + choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
       console.log(body)
       json = jsonParse(body);
 
