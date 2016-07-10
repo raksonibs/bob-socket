@@ -59,6 +59,18 @@ io.on('connection', (socket) => {
     })
   })
 
+  socket.on('requestAllMoves', function(data) {
+    console.log("REQUESTING ALL DATA FOR MOVER: " + data.data.match);
+    console.log(data);
+
+    request.get({url: 'http://localhost:3000/movers/' + data.data.match}, function(error, response, body) {
+      console.log("BROADCASTING ALL MOVES");
+      console.log(body);
+      json = jsonParse(body);
+      io.emit("updateGameView", json);
+    })
+  })
+
   socket.on('recordMove', function(data) {
     console.log('MOVE RECORDED!');
     // console.log(data);
