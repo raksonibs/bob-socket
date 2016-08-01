@@ -6,6 +6,7 @@ const path = require('path');
 var request = require('request');
 const debug = require('debug');
 var json;
+const cors = require('cors');
 
 debug('booting %s', 'test');
 
@@ -26,9 +27,13 @@ const INDEX = path.join(__dirname, 'index.html');
 
 const server = express()
   .use((req, res) => res.sendFile(INDEX) )
+  .use(cors())
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(server);
+
+// io.set('origins', 'https://ggamble.pagefrontapp.com:80');
+io.set('origins', 'https://ggamble.pagefrontapp.com')
 
 io.on('connection', (socket) => {
   console.log('Client connected');
