@@ -48,10 +48,19 @@ io.on('connection', (socket) => {
 
   socket.on('turnChange', function(data) {
     // only want to update based on match id
+    console.log("NEED TO TURN CHANGE OVER HERE")
     console.log('need to update change')
     console.log(data)
+    var matchId;
     // might want to grab match?
-    request.patch({url: 'http://localhost:3000/matches/' + data.data.match.uniqueId, data: data}, function(error, response, body) {
+    if (data.data.match.uniqueId === null) {
+      matchId = data.data.match.mover;
+    } else {
+      matchId = data.data.match.uniqueId;
+    }
+
+    console.log("HERE IS THE MATCH ID WE ARE UPDATING CURRENTLY: " + matchId);
+    request.patch({url: 'http://localhost:3000/matches/' + matchId, data: data}, function(error, response, body) {
       console.log("HERE IS THE TURN CHANGE JSON");
       console.log(body)
       json = jsonParse(body);
