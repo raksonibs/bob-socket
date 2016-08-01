@@ -8,6 +8,8 @@ const debug = require('debug');
 var json;
 const cors = require('cors');
 
+
+
 debug('booting %s', 'test');
 
 function jsonParse(body) {
@@ -38,10 +40,18 @@ const server = express()
   .use(cors())
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
+server.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+  next();
+});
+
 const io = socketIO(server);
 
 // io.set('origins', 'https://ggamble.pagefrontapp.com:80');
-io.set('origins', 'https://ggamble.pagefrontapp.com')
+io.set('origins', 'https://ggamble.pagefrontapp.com:* http://ggamble.pagefrontapp.com:* ggamble.pagefrontapp.com:*')
 
 io.on('connection', (socket) => {
   console.log('Client connected');
