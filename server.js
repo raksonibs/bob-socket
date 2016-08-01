@@ -22,6 +22,14 @@ function jsonParse(body) {
   return json;
 }
 
+var baseUrl;
+
+if (process.env.NODE_ENV === "development") {
+  baseUrl = "http://localhost:3000"
+} else {
+  baseUrl = "https://protected-earth-92148.herokuapp.com"
+}
+
 const PORT = process.env.PORT || 3001;
 const INDEX = path.join(__dirname, 'index.html');
 
@@ -44,7 +52,7 @@ io.on('connection', (socket) => {
 
   socket.on('resetMover', function(data) {
     console.log("RESETING MOVER DATA IN RAILS APP");
-    request.patch({url: "http://localhost:3000/movers/" + data.data.mover_id + "/reset"}, function(error, response, body) {
+    request.patch({url: baseUrl + "/movers/" + data.data.mover_id + "/reset"}, function(error, response, body) {
       console.log(body)
       json = jsonParse(body);
       // io.emit('updateCurrentTurn', json)
@@ -65,7 +73,7 @@ io.on('connection', (socket) => {
     }
 
     console.log("HERE IS THE MATCH ID WE ARE UPDATING CURRENTLY: " + matchId);
-    request.patch({url: 'http://localhost:3000/matches/' + matchId, data: data}, function(error, response, body) {
+    request.patch({url: baseUrl + "/matches/' + matchId, data: data}, function(error, response, body) {
       console.log("HERE IS THE TURN CHANGE JSON");
       console.log(body)
       json = jsonParse(body);
@@ -77,7 +85,7 @@ io.on('connection', (socket) => {
     console.log("REQUESTING ALL DATA FOR MOVER: " + data.data.match);
     console.log(data);
 
-    request.get({url: 'http://localhost:3000/movers/' + data.data.match}, function(error, response, body) {
+    request.get({url: baseUrl + "/movers/' + data.data.match}, function(error, response, body) {
       console.log("BROADCASTING ALL MOVES");
       console.log(body);
       json = jsonParse(body);
@@ -100,7 +108,7 @@ io.on('connection', (socket) => {
     } else {
       choice = choice;
     }
-    request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId +"/record_move?choice=" + choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
+    request.post({url: baseUrl + "/matches/" + data.data.match.uniqueId +"/record_move?choice=" + choice + "&user=" + data.data.user_id, data: json}, function(error, response, body) {
       console.log(body)
       json = jsonParse(body);
 
@@ -122,7 +130,7 @@ io.on('connection', (socket) => {
   socket.on('winnerMatch', function(data) {
     console.log(data);
     console.log("recording winner for match id" + data.data.match.uniqueId + " and winner is " + data.data.user_id);
-    request.post({url: "http://localhost:3000/matches/" + data.data.match.uniqueId + "/winner/?user_id=" + data.data.user_id, data: data}, function(error, response, body) {
+    request.post({url: baseUrl + "/matches/" + data.data.match.uniqueId + "/winner/?user_id=" + data.data.user_id, data: data}, function(error, response, body) {
       console.log(body)
       json = jsonParse(body);
       // emit that winner and outcome created
@@ -144,7 +152,7 @@ io.on('connection', (socket) => {
   socket.on('searchForGame', function(data) {
     console.log(data)
     console.log("searching on server for game type " + data.data.game_type_id + " with game id " + data.data.game_id)
-    request('http://localhost:3000/matches/search/' + data.data.game_type_id + "?game_id=" + data.data.game_id, function(error, response, body) {
+    request(baseUrl + "/matches/search/' + data.data.game_type_id + "?game_id=" + data.data.game_id, function(error, response, body) {
       // search for match, if cannot find match keep searching, if can find match send data back to transitionTo the new match in the component!
       // need to find those guys like match 3 when match 4 finds to emit to transition back or something
       // set up listener on client that looks for these match ids then?
